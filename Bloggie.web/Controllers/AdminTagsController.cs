@@ -95,8 +95,7 @@ namespace Bloggie.web.Controllers
         [HttpPost]
         public async Task<IActionResult> EditAsync(EditTagRequest editTagRequest)
         {
-            if (!ModelState.IsValid)
-                return View(editTagRequest);
+            
 
             var existingTag = await _tagRepository.GetAsync(editTagRequest.Id);
             if (existingTag == null)
