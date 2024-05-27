@@ -1,0 +1,57 @@
+﻿@model IEnumerable<Bloggie.web.Models.Domain.PostEditLog>
+
+@{
+    ViewData["Title"] = "History Of The Post Changes";
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+<div class="bg-secondary bg-opacity-10 py-2 mb-4">
+    <div class="container">
+        <h1 class="text-center">Post Edit Logs - Admin Functionality</h1>
+    </div>
+</div>
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Post ID</th>
+                <th>Post Title</th>
+                <th>Author</th>
+                <th>Edited By</th>
+                <th>Edit Timestamp</th>
+                <th>Post Showing on Home Page</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model)
+            {
+                <tr>
+                    <td>@log.PostID</td>
+                    <td>@log.BlogPost.Heading</td>
+                    <td>@log.BlogPost.Author</td>
+                    <td>@log.AdminEmail</td>
+                    <td>@log.EditTimestamp</td>
+                    @if (log.BlogPost.Visible == true)
+                    {
+                        <td>Yes</td>
+                    }
+                    else
+                    {
+                        <td>No</td>
+                    }
+
+                </tr>
+                <tr>
+                    <td colspan="5" class="text-center"><strong>Edit Description:</strong> <span style="color: blue;">@log.EditDescription</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No post edit logs available.</p>
+}
+
+<partial name="_ScrollUp" />

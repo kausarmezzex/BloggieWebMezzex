@@ -1,0 +1,114 @@
+﻿@model Bloggie.web.Models.ViewModel.HomeViewModel
+@{
+    ViewData["Title"] = "Posts by Category";
+    Layout = "_Layout";
+}
+@{
+    int nextPage = Convert.ToInt32(ViewBag.PageNumber) + 1;
+    int prevPage = Convert.ToInt32(ViewBag.PageNumber) - 1;
+}
+<section class="bsb-blog-5 py-3 py-md-5 py-xl-8">
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <div class="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6">
+                <h2 class="display-5 fw-bold lh-1 mb-3 text-center">Posts in @ViewBag.CategoryName</h2>
+                <hr class="w-50 mx-auto mb-5 mb-xl-9 border-dark-subtle">
+            </div>
+        </div>
+    </div>
+    <div class="container mt-5">
+        <div class="row">
+            @if (Model != null && Model.BlogPosts.Any())
+            {
+                @foreach (var post in Model.BlogPosts)
+                {
+                    if (post.Visible == true)
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 border border-dark rounded shadow">
+                                <a asp-area=""
+                                   asp-controller="Blogs"
+                                   asp-action="Index"
+                                   asp-route-urlHandle="@post.UrlHandle">
+                                    <img src="@post.FeaturedImageUrl" class="card-img-top custom-card-img" alt="Featured Image">
+                                </a>
+
+                                <div class="card-body">
+                                    <h6 class="card-title @((post.Heading.Length < 44) ? "mb-4" : "")">
+                                        <a asp-area="" asp-controller="Blogs" asp-action="Index" asp-route-urlHandle="@post.UrlHandle" class="text-decoration-none text-dark">
+                                            <span class="fw-bold">@post.Heading</span>
+                                        </a>
+                                    </h6>
+
+                                    <p class="card-text text-muted">
+                                        <small>Author: @post.Author</small><br />
+                                        <small>Published Date: @post.PublishDate.ToShortDateString()</small>
+                                    </p>
+                                    @if (!string.IsNullOrWhiteSpace(post.ShortDescription))
+                                    {
+                                        // Trim the short description to 150 characters or less
+                                        var shortDescription = post.ShortDescription.Length > 150 ? post.ShortDescription.Substring(0, 150) + "..." : post.ShortDescription;
+
+                                        <p class="card-text">@shortDescription</p>
+                                    }
+
+                                    <div class="d-flex justify-content-between align-items-center mt-4">
+                                        <a class="btn btn-dark btn-sm"
+                                           asp-area=""
+                                           asp-controller="Blogs"
+                                           asp-action="Index"
+                                           asp-route-urlHandle="@post.UrlHandle">Read More</a>
+
+                                        <div class="tags">
+                                            @foreach (var tag in post.Tags)
+                                            {
+                                                <span class="badge bg-dark me-1">
+                                                    @tag.Name
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            }
+            else
+            {
+                <div class="col text-center">
+                    <p>No posts available.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <nav aria-label="Page navigation example" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @((prevPage < 1) ? "disabled" : "")">
+                <a class="page-link" asp-controller="Home" asp-action="PostsByCategory"
+                   asp-route-categoryName="@ViewBag.CategoryName"
+                   asp-route-pageNumber="@prevPage"
+                   asp-route-pageSize="@ViewBag.PageSize"
+                   tabindex="-1">Previous</a>
+            </li>
+
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" asp-controller="Home" asp-action="PostsByCategory"
+                       asp-route-categoryName="@ViewBag.CategoryName"
+                       asp-route-pageNumber="@i"
+                       asp-route-pageSize="@ViewBag.PageSize">@i</a>
+                </li>
+            }
+
+            <li class="page-item @((nextPage > ViewBag.TotalPages) ? "disabled" : "")">
+                <a class="page-link" asp-controller="Home" asp-action="PostsByCategory"
+                   asp-route-categoryName="@ViewBag.CategoryName"
+                   asp-route-pageNumber="@nextPage"
+                   asp-route-pageSize="@ViewBag.PageSize">Next</a>
+            </li>
+        </ul>
+    </nav>
+</section>

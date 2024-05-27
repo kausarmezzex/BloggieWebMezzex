@@ -1,0 +1,151 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Bloggie.Web</title>
+
+    @if (ViewData.ContainsKey("MetaTitle"))
+    {
+        <meta name="title" content="@ViewData["MetaTitle"]" />
+    }
+
+    @if (ViewData.ContainsKey("MetaKeywords"))
+    {
+        <meta name="keywords" content="@ViewData["MetaKeywords"]" />
+    }
+
+    @if (ViewData.ContainsKey("MetaDes"))
+    {
+        <meta name="description" content="@ViewData["MetaDes"]" />
+    }
+
+    <link rel="stylesheet" href="https://cdn.lineicons.com/4.0/lineicons.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/AdminDash.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href='https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css" />
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+    <link href="~/css/nav.css" rel="stylesheet" />
+
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-wrapper {
+            flex: 1;
+        }
+
+        .navbar-nav .nav-item {
+            margin-left: 1rem;
+            margin-right: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom box-shadow">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Bloggie.Web</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Contact">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="About">About</a>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex flexi align-items-center nav-item">
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            <div class="me-3 text-light">
+                                @User?.Identity?.Name
+                            </div>
+
+                            <a class="btn me-3 bg-light text-dark"
+                               asp-area=""
+                               asp-controller="Account"
+                               asp-action="Logout">Logout</a>
+                        }
+                        else
+                        {
+                            <a class="btn me-3 bg-light text-dark nav-item"
+                               asp-area=""
+                               asp-controller="Account"
+                               asp-action="Login">Login</a>
+
+                            <a class="btn me-3 bg-light text-dark nav-item"
+                               asp-area=""
+                               asp-controller="Account"
+                               asp-action="Register">Register</a>
+                        }
+                    </div>
+
+                    <!-- Search Box -->
+                    <form class="d-flex ms-3 form-inline my-2 my-lg-0" method="get" asp-controller="Home" asp-action="Search">
+                        <input class="form-control me-2 rounded-pill mr-sm-2" type="search" name="query" placeholder="Search Blog Posts" aria-label="Search">
+                        <button class="btn btn-light rounded-pill " type="submit">Search</button>
+                    </form>
+                    <!-- End of Search Box -->
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="content-wrapper">
+        <main role="main">
+            <partial name="_Notification" />
+            @RenderBody()
+        </main>
+    </div>
+    <footer class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-top box-shadow">
+        <div class="container">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Bloggie.Web</a>
+            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        <a class="nav-link navbar-brand text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link navbar-brand text-light" asp-area="" asp-controller="Home" asp-action="Contact">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link navbar-brand text-light" asp-area="" asp-controller="Home" asp-action="About">About</a>
+                    </li>
+                </ul>
+                <div class="text-light text-center">
+                    &copy; 2023 - Bloggie.Web
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src='https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js'></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,53 @@
+﻿@model Bloggie.web.Models.ViewModel.LoginViewModel
+
+@if (ViewData.ModelState.ContainsKey(string.Empty))
+{
+    <div class="mt-5 d-flex justify-content-center">
+        <div class="row">
+            <div class="col col-md-12 px-3">
+                <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" style="background-color: transparent; border-color: transparent;">
+                    <!-- Move the close button to the right -->
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <!-- Display error messages -->
+                    <div class="flex-grow-1">
+                        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="container d-flex justify-content-center">
+    <div class="card registerCrd mx-auto my-5" style="width: 450px;">
+        <div class="card-header bg-dark text-white">
+            Login
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <i class="fas fa-lock" style="margin-right: 5px;"></i>
+                    <input type="text" id="username" class="form-control" asp-for="UserName" required />
+                    <span class="text-danger" asp-validation-for="UserName"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="form-control" asp-for="Password" required minlength="8" />
+                    <span class="text-danger" asp-validation-for="Password"></span>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-dark w-100">Sign In</button>
+                </div>
+
+                <input type="hidden" asp-for="ReturnUrl" />
+            </form>
+        </div>
+        <div class="card-footer text-center">
+            Don't have an account? <a href="/Account/Register">Register</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+﻿@model Bloggie.web.Models.ViewModel.EditTagRequest
+
+@{
+    ViewData["Title"] = "Edit Tag";
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+<div class="container mt-5">
+    @if (Model != null)
+    {
+        <div class="card mx-auto" style="max-width: 500px; border-color: #dee2e6;">
+            <div class="card-header text-center bg-light">
+                <h5 class="card-title">Edit Tag - Admin Functionality</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                    <div class="form-group mb-">
+                        <label asp-for="Id" class="control-label col-form-label">Tag ID:</label>
+                        <input asp-for="Id" class="form-control" readonly />
+                        <span asp-validation-for="Id" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Name" class="control-label col-form-label">Tag Name:</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="DisplayName" class="control-label col-form-label">Display Name:</label>
+                        <input asp-for="DisplayName" class="form-control" />
+                        <span asp-validation-for="DisplayName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-2">
+                        <div class="d-flex">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="submit" class="btn btn-danger ms-2"
+                                    asp-area=""
+                                    asp-controller="AdminTags"
+                                    asp-action="Delete">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            No data found for editing.
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

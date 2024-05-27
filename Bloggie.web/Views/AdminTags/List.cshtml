@@ -1,0 +1,162 @@
+﻿@model List<Bloggie.web.Models.Domain.Tag>
+
+@{
+    ViewData["Title"] = "List Tag";
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+@{
+    int nextPage = Convert.ToInt32(ViewBag.PageNumber) + 1;
+    int prevPage = Convert.ToInt32(ViewBag.PageNumber) - 1;
+}
+
+<div class="bg-secondary bg-opacity-10 py-2 mb-2">
+    <div class="container">
+        <h1 class="text-center">Show All Tags - Admin Functionality</h1>
+    </div>
+</div>
+
+
+<form method="get" asp-controller="AdminTags" asp-action="List">
+    <div class="container mt-5 d-flex justify-content-center">
+        <div class="row">
+            <div class="col col-md-12 px-3">
+                <!-- Increased column width -->
+                <div class="input-group mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 50px; overflow: hidden; max-width: 800px; margin: auto;">
+                    <!-- Added max-width and centered the search box -->
+                    <input type="text" class="form-control rounded-pill py-2 px-3" name="searchQuery" value="@ViewBag.SearchQuery" placeholder="Search Tags" style="font-size: 16px; border: none; box-shadow: none; outline: none;">
+                    <button type="submit" class="btn btn-warning rounded-pill ms-3" style="border-radius: 50px 0 0 50px; box-shadow: none; outline: none; padding-left: 20px; padding-right: 20px;">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<div class="container mt-2 mb-4">
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Tag List</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>
+                                    Name
+                                    <span>
+                                        <span>
+                                            <a class="btn btn-light"
+                                               asp-controller="AdminTags"
+                                               asp-action="List"
+                                               asp-route-sortBy="Name"
+                                               asp-route-sortDirection="Asc"
+                                               asp-route-searchQuery="@ViewBag.SearchQuery">
+                                                <i class="bi bi-arrow-up"></i>
+                                            </a>
+                                        </span>
+                                        <span>
+                                            <a class="btn btn-light"
+                                               asp-controller="AdminTags"
+                                               asp-action="List"
+                                               asp-route-sortBy="Name"
+                                               asp-route-sortDirection="Desc"
+                                               asp-route-searchQuery="@ViewBag.SearchQuery">
+                                                <i class="bi bi-arrow-down"></i>
+                                            </a>
+                                        </span>
+                                    </span>
+                                </th>
+                                <th>
+                                    Display Name
+                                    <span>
+                                        <span>
+                                            <a class="btn btn-light"
+                                               asp-controller="AdminTags"
+                                               asp-action="List"
+                                               asp-route-sortBy="DisplayName"
+                                               asp-route-sortDirection="Asc"
+                                               asp-route-searchQuery="@ViewBag.SearchQuery">
+                                                <i class="bi bi-arrow-up"></i>
+                                            </a>
+                                        </span>
+                                        <span>
+                                            <a class="btn btn-light"
+                                               asp-controller="AdminTags"
+                                               asp-action="List"
+                                               asp-route-sortBy="DisplayName"
+                                               asp-route-sortDirection="Desc"
+                                               asp-route-searchQuery="@ViewBag.SearchQuery">
+                                                <i class="bi bi-arrow-down"></i>
+                                            </a>
+                                        </span>
+                                    </span>
+                                </th>
+                                <th>Number of Blog Posts</th>
+                                <th>Edit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var tag in Model)
+                            {
+                                <tr>
+                                    <td>@tag.Id</td>
+                                    <td>@tag.Name</td>
+                                    <td>@tag.DisplayName</td>
+                                    <td>@(tag.BlogPosts != null ? tag.BlogPosts.Count : 0)</td>
+                                    <td>
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@tag.Id" class="btn btn-primary btn-sm">Edit</a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @((prevPage < 1) ? "disabled" : "")">
+                    <a class="page-link" asp-controller="AdminTags" asp-action="List"
+                       asp-route-pageNumber="@prevPage"
+                       asp-route-pageSize="@ViewBag.PageSize"
+                       asp-route-sortBy="@ViewBag.SortBy"
+                       asp-route-sortDirection="@ViewBag.SortDirection"
+                       tabindex="-1">Previous</a>
+                </li>
+
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-controller="AdminTags" asp-action="List"
+                           asp-route-pageNumber="@i"
+                           asp-route-pageSize="@ViewBag.PageSize"
+                           asp-route-sortBy="@ViewBag.SortBy"
+                           asp-route-sortDirection="@ViewBag.SortDirection">@i</a>
+                    </li>
+                }
+
+                <li class="page-item @((nextPage > ViewBag.TotalPages) ? "disabled" : "")">
+                    <a class="page-link" asp-controller="AdminTags" asp-action="List"
+                       asp-route-pageNumber="@nextPage"
+                       asp-route-pageSize="@ViewBag.PageSize"
+                       asp-route-sortBy="@ViewBag.SortBy"
+                       asp-route-sortDirection="@ViewBag.SortDirection">Next</a>
+                </li>
+            </ul>
+        </nav>
+
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            No data found for tags.
+        </div>
+    }
+</div>

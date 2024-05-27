@@ -1,0 +1,332 @@
+﻿@model Bloggie.web.Models.ViewModel.BlogDetailsViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
+
+@{
+    ViewData["Title"] = Model.PageTitle;
+    ViewData["MetaKeywords"] = Model.MetaKeywords;
+    ViewData["MetaTitle"] = Model.MetaTitle;
+    ViewData["MetaDes"] = Model.MetaDescription;
+}
+
+<style>
+    /* Custom CSS for fixing image size */
+    .carousel-item .card-img-top {
+        height: 150px; /* Adjust the height as needed */
+        object-fit: cover; /* Ensures the image covers the entire container */
+    }
+</style>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    @if (Model != null)
+                    {
+                        <h1 class="mb-3">@Model.Heading</h1>
+
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-secondary">@Model.Author</span>
+                            <span class="text-secondary">@Model.PublishDate.ToShortDateString()</span>
+                        </div>
+                        <div class="mb-3">
+                            @{
+                                await Html.RenderPartialAsync("_SocialSharing", ViewData["Title"]);
+                            }
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center">
+                                <a id="btnLike" class="btn btn-outline-primary me-2" style="cursor: pointer;">
+                                    <i class="bi bi-hand-thumbs-up"></i> Like
+                                </a>
+                                <span id="totalLikes" class="ms-2">@Model.TotalLikes</span>
+                            </div>
+
+                            <div class="modal fade" id="loginModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="loginModalLabel">Login Required</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Please login to like this post.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <a href="/Account/Login?returnUrl=@Uri.EscapeDataString(Context.Request.Path + Context.Request.QueryString)" class="btn btn-primary">Login</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <span class="text-secondary">@Model.TotalComments</span> comments
+                            </div>
+                        </div>
+                        <div class="mb-3 d-flex">
+                            @foreach (var tag in Model.Tags)
+                            {
+                                <span class="badge bg-secondary me-1">@tag.Name</span>
+                            }
+                        </div>
+
+                        <img src="@Model.FeaturedImageUrl" class="d-block img-fluid mb-3" />
+
+                        <div class="mb-3 blog-details-content">
+                            @Html.Raw(Model.Content)
+                        </div>
+
+                        <div class="mb-3">
+                            @{
+                                await Html.RenderPartialAsync("_SocialSharing", ViewData["Title"]);
+                            }
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Comments</h5>
+                            </div>
+                            <div class="card-body comment-section">
+                                @if (signInManager.IsSignedIn(User))
+                                {
+                                    <form method="post">
+                                        <div class="mb-3">
+                                            <label class="form-label">Comment Description</label>
+                                            <input type="text" class="form-control" asp-for="CommentDescription" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <button type="submit" class="btn btn-dark">Submit</button>
+                                            <input type="hidden" asp-for="Id" />
+                                            <input type="hidden" asp-for="UrlHandle" />
+                                        </div>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-info" role="alert">
+                                        @{
+                                            string returnUrl = Url.Action("Index", "Blogs", new { urlHandle = Model.UrlHandle });
+                                        }
+
+                                        <a href="/Account/Login?returnUrl=@returnUrl">Login to leave a comment</a>
+
+                                    </div>
+
+                                }
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            @if (Model.Comments != null && Model.Comments.Any())
+                            {
+                                @foreach (var comment in Model.Comments)
+                                {
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div>
+                                                @comment.Description
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-secondary">@comment.Username</span>
+                                                <span class="text-secondary">@comment.DateAdded.ToShortDateString()</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        @if (Model.RelatedPosts != null && Model.RelatedPosts.Any())
+                        {
+                            <div id="relatedPostsCarousel" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    @for (int i = 0; i < Model.RelatedPosts.Count; i++)
+                                    {
+                                        <div class="carousel-item @(i == 0 ? "active" : "")">
+                                            <div class="row">
+                                                <div class="col-12 col-md-4">
+                                                    <div class="card h-100">
+                                                        <img src="@Model.RelatedPosts[i].FeaturedImageUrl" class="card-img-top" alt="@Model.RelatedPosts[i].Heading">
+                                                        <div class="card-body d-flex flex-column">
+                                                            @{
+                                                                var titleClass1 = Model.RelatedPosts[i].Heading.Length < 70 ? "card-title mb-4" : "card-title";
+                                                            }
+                                                            <h6 class="@titleClass1">
+                                                                <a asp-area="" asp-controller="Blogs" asp-action="Index" asp-route-urlHandle="@Model.RelatedPosts[i].UrlHandle" class="text-decoration-none text-dark">
+                                                                    <span class="fw-bold">@Model.RelatedPosts[i].Heading</span>
+                                                                </a>
+                                                            </h6>
+                                                            <a class="btn btn-dark btn-sm"
+                                                               asp-controller="Blogs"
+                                                               asp-action="Index"
+                                                               asp-route-urlHandle="@Model.RelatedPosts[i].UrlHandle">Read More</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @if (i + 1 < Model.RelatedPosts.Count)
+                                                {
+                                                    <div class="col-12 col-md-4 d-none d-md-block">
+                                                        <div class="card h-100">
+                                                            <img src="@Model.RelatedPosts[i + 1].FeaturedImageUrl" class="card-img-top" alt="@Model.RelatedPosts[i + 1].Heading">
+                                                            <div class="card-body d-flex flex-column">
+                                                                @{
+                                                                    var titleClass2 = Model.RelatedPosts[i + 1].Heading.Length < 70 ? "card-title mb-4" : "card-title";
+                                                                }
+                                                                <h6 class="@titleClass2">
+                                                                    <a asp-area="" asp-controller="Blogs" asp-action="Index" asp-route-urlHandle="@Model.RelatedPosts[i + 1].UrlHandle" class="text-decoration-none text-dark">
+                                                                        <span class="fw-bold">@Model.RelatedPosts[i + 1].Heading</span>
+                                                                    </a>
+                                                                </h6>
+                                                                <a class="btn btn-dark btn-sm"
+                                                                   asp-controller="Blogs"
+                                                                   asp-action="Index"
+                                                                   asp-route-urlHandle="@Model.RelatedPosts[i + 1].UrlHandle">Read More</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (i + 2 < Model.RelatedPosts.Count)
+                                                {
+                                                    <div class="col-12 col-md-4 d-none d-md-block">
+                                                        <div class="card h-100">
+                                                            <img src="@Model.RelatedPosts[i + 2].FeaturedImageUrl" class="card-img-top" alt="@Model.RelatedPosts[i + 2].Heading">
+                                                            <div class="card-body d-flex flex-column">
+                                                                @{
+                                                                    var titleClass3 = Model.RelatedPosts[i + 2].Heading.Length < 70 ? "card-title mb-4" : "card-title";
+                                                                }
+                                                                <h6 class="@titleClass3">
+                                                                    <a asp-area="" asp-controller="Blogs" asp-action="Index" asp-route-urlHandle="@Model.RelatedPosts[i + 2].UrlHandle" class="text-decoration-none text-dark">
+                                                                        <span class="fw-bold">@Model.RelatedPosts[i + 2].Heading</span>
+                                                                    </a>
+                                                                </h6>
+                                                                <a class="btn btn-dark btn-sm"
+                                                                   asp-controller="Blogs"
+                                                                   asp-action="Index"
+                                                                   asp-route-urlHandle="@Model.RelatedPosts[i + 2].UrlHandle">Read More</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        i += 2; // Skip the next two posts since they're already included in this slide for desktop view
+                                    }
+                                </div>
+                                <!-- Carousel controls -->
+                                <a class="carousel-control-prev" href="#relatedPostsCarousel" role="button" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#relatedPostsCarousel" role="button" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </a>
+                            </div>
+
+                        }
+                        else
+                        {
+                            <p>Related Blog post not found!</p>
+                        }
+
+                    }
+                    else
+                    {
+                        <p>Blog post not found!</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<partial name="_ScrollUp" />
+
+@section Scripts {
+    <script>
+      
+        document.addEventListener("DOMContentLoaded", function () {
+            const btnLikeElement = document.getElementById('btnLike');
+            const totalLikeElement = document.getElementById('totalLikes');
+            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+
+            async function getTotalLikes() {
+                fetch('/api/blogpostlike/@Model.Id/totalLikes', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    }
+                }).then(data => data.json())
+                    .then(result => {
+                        if (result === 1) {
+                            totalLikeElement.innerHTML = result + " Like";
+                        } else if (result > 1) {
+                            totalLikeElement.innerHTML = result + " Likes";
+                        } else {
+                            totalLikeElement.innerHTML = ""; // Clear the content if there are 0 likes
+                        }
+                    });
+
+            }
+
+            async function updateLikeStatus(isLiked) {
+                const url = '/api/BlogPostLike/AddOrRemove';
+                const method = 'POST';
+
+                fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    },
+                    body: JSON.stringify({
+                        blogPostId: '@Model.Id',
+                        userId: '@userManager.GetUserId(User)'
+                    })
+                }).then(() => {
+                    if (isLiked) {
+                        btnLikeElement.classList.remove('liked');
+                        btnLikeElement.innerHTML = '<i class="bi bi-hand-thumbs-up"></i> Like';
+                    } else {
+                        btnLikeElement.classList.add('liked');
+                        btnLikeElement.innerHTML = '<i class="bi bi-hand-thumbs-up-fill"></i> Liked';
+                    }
+                    getTotalLikes();
+                });
+            }
+
+            async function addLikeForBlog() {
+                // Check if the user is logged in
+                const isAuthenticated = '@User.Identity.IsAuthenticated' === 'True';
+                if (!isAuthenticated) {
+                    // Open the login modal instead of redirecting
+                    loginModal.show();
+                    return;
+                }
+
+                // If logged in, proceed to like/unlike the post
+                const isLiked = btnLikeElement.classList.contains('liked');
+                updateLikeStatus(isLiked);
+            }
+
+            btnLikeElement.addEventListener('click', addLikeForBlog);
+
+            // Update the initial state of the like button
+            const initialLikedState = @Model.Liked.ToString().ToLower();
+            if (initialLikedState) {
+                btnLikeElement.classList.add('liked');
+                btnLikeElement.innerHTML = '<i class="bi bi-hand-thumbs-up-fill"></i> Liked';
+            } else {
+                btnLikeElement.classList.remove('liked');
+                btnLikeElement.innerHTML = '<i class="bi bi-hand-thumbs-up"></i> Like';
+            }
+
+            // Fetch and update total likes when the page loads
+            getTotalLikes();
+        });
+
+
+    </script>
+}

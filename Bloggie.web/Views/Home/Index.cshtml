@@ -1,0 +1,213 @@
+﻿@model Bloggie.web.Models.ViewModel.HomeViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_Layout";
+    int nextPage = Convert.ToInt32(ViewBag.PageNumber) + 1;
+    int prevPage = Convert.ToInt32(ViewBag.PageNumber) - 1;
+}
+
+<div class="container col-xxl-8 px-4 py-5">
+    <div class="row align-items-center g-5 py-5">
+        <div class="col-12 col-lg-6">
+            <h1 class="display-5 fw-bold lh-1 mb-3 text-center">
+                Bloggie - The Dev Blog
+            </h1>
+            <p class="lead text-center">
+                Bloggie is the home to coding blogs covering a vast range of
+                topics like HTML, CSS, Javascript, ASP.NET, C#, Angular etc.
+                Want to read the latest dev articles? Join the Bloggie app and
+                get weekly blogs in your email.
+            </p>
+        </div>
+        <div class="col-12 col-lg-6 d-flex jus">
+            <img src="https://images.pexels.com/photos/57690/pexels-photo-57690.jpeg?auto=compress&cs=tinysrgb&w=600"
+                 alt="Bloggie - Dev blogs"
+                 class="d-block mx-lg-auto img-fluid rounded-circle" width="300" />
+        </div>
+    </div>
+</div>
+
+<!-- Tag Slider Section -->
+<section class="container py-3 mb-4 mt-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="text-center mb-4">
+                <h2 class="display-5 fw-bold lh-1 mb-3">Explore Blogs by Categories</h2>
+                <hr class="w-50 mx-auto mb-4 border-dark-subtle">
+                <p class="d-none d-md-block">Find articles in your favorite categories and stay updated with the latest trends.</p>
+                <p class="d-block d-md-none">Find articles in your favorite categories<br> and stay updated with the latest trends.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="position-relative">
+        <button class="tag-slider-nav tag-slider-nav-prev" onclick="slideTags(-1)">&#8249;</button>
+        <div class="tag-slider">
+            @foreach (var tag in Model.Tags)
+            {
+                <a asp-controller="Home" asp-action="PostsByCategory" asp-route-categoryName="@tag.Name" class="tag-slider-item">
+                    <img src="@tag.ImageUrl" alt="@tag.DisplayName">
+                    <div class="tag-name">@tag.DisplayName</div>
+                </a>
+            }
+        </div>
+        <button class="tag-slider-nav tag-slider-nav-next" onclick="slideTags(1)">&#8250;</button>
+    </div>
+</section>
+
+<section class="bsb-blog-5 py-3 py-md-5 py-xl-8 mt-5">
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <div class="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6">
+                <h2 class="display-5 fw-bold lh-1 mb-3 text-center">Latest Articles</h2>
+                <hr class="w-50 mx-auto mb-5 mb-xl-9 border-dark-subtle">
+            </div>
+        </div>
+    </div>
+    <form method="get" action="/Home/GetPostsByTag">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="dropdown">
+                        @Html.DropDownList("tagName", new SelectList(Model.Tags, "DisplayName", "DisplayName", ViewBag.SelectedTagName), "Select Tag", new { @class = "form-select", onchange = "this.form.submit()" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="container mt-5">
+        <div class="row">
+            @if (Model != null && Model.BlogPosts.Any())
+            {
+                @foreach (var post in Model.BlogPosts)
+                {
+                    if (post.Visible == true)
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 border border-dark rounded shadow">
+                                <a asp-area=""
+                                   asp-controller="Blogs"
+                                   asp-action="Index"
+                                   asp-route-tagName="@post.Tags.FirstOrDefault()?.Name"
+                                   asp-route-urlHandle="@post.UrlHandle">
+                                    <img src="@post.FeaturedImageUrl" class="card-img-top custom-card-img" alt="Featured Image">
+                                </a>
+
+                                <div class="card-body">
+                                    <h6 class="card-title @((post.Heading.Length < 44) ? "mb-4" : "")">
+                                        <a asp-area="" asp-controller="Blogs" asp-route-tagName="@post.Tags.FirstOrDefault()?.Name" asp-action="Index" asp-route-urlHandle="@post.UrlHandle" class="text-decoration-none text-dark">
+                                            <span class="fw-bold">@post.Heading</span>
+                                        </a>
+                                    </h6>
+
+                                    <p class="card-text text-muted">
+                                        <small>Author: @post.Author</small><br />
+                                        <small>Published Date: @post.PublishDate.ToShortDateString()</small>
+                                    </p>
+                                    @if (!string.IsNullOrWhiteSpace(post.ShortDescription))
+                                    {
+                                        // Trim the short description to 150 characters or less
+                                        var shortDescription = post.ShortDescription.Length > 150 ? post.ShortDescription.Substring(0, 150) + "..." : post.ShortDescription;
+
+                                        <p class="card-text">@shortDescription</p>
+                                    }
+
+                                    <div class="d-flex justify-content-between align-items-center mt-4">
+                                        <a class="btn btn-dark btn-sm"
+                                           asp-controller="Blogs"
+                                           asp-action="Index"
+                                           asp-route-tagName="@post.Tags.FirstOrDefault()?.Name"
+                                           asp-route-urlHandle="@post.UrlHandle">Read More</a>
+
+                                        <div class="tags">
+                                            @foreach (var tag in post.Tags)
+                                            {
+                                                <span class="badge bg-dark me-1">
+                                                    @tag.Name
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            }
+            else
+            {
+                <div class="col text-center">
+                    <p>No posts available.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <nav aria-label="Page navigation example" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @((prevPage < 1) ? "disabled" : "")">
+                <a class="page-link" asp-controller="Home" asp-action="Index"
+                   asp-route-pageNumber="@prevPage"
+                   asp-route-pageSize="@ViewBag.PageSize"
+                   asp-route-sortBy="@ViewBag.SortBy"
+                   asp-route-sortDirection="@ViewBag.SortDirection"
+                   tabindex="-1">Previous</a>
+            </li>
+
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" asp-controller="Home" asp-action="Index"
+                       asp-route-pageNumber="@i"
+                       asp-route-pageSize="@ViewBag.PageSize"
+                       asp-route-sortBy="@ViewBag.SortBy"
+                       asp-route-sortDirection="@ViewBag.SortDirection">@i</a>
+                </li>
+            }
+
+            <li class="page-item @((nextPage > ViewBag.TotalPages) ? "disabled" : "")">
+                <a class="page-link" asp-controller="Home" asp-action="Index"
+                   asp-route-pageNumber="@nextPage"
+                   asp-route-pageSize="@ViewBag.PageSize"
+                   asp-route-sortBy="@ViewBag.SortBy"
+                   asp-route-sortDirection="@ViewBag.SortDirection">Next</a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<partial name="_ScrollUp" />
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tagSlider = document.querySelector('.tag-slider');
+            const tagItems = tagSlider.children;
+            const itemWidth = tagItems[0].clientWidth + 10; // Include margin-right in the width calculation
+            let slideIndex = 0;
+
+            function slideTags(direction) {
+                slideIndex += direction;
+
+                if (slideIndex < 0) {
+                    slideIndex = 0;
+                } else if (slideIndex > tagItems.length - 1) {
+                    slideIndex = tagItems.length - 1;
+                }
+
+                const scrollPosition = slideIndex * itemWidth;
+                tagSlider.scrollTo({
+                    left: scrollPosition,
+                    behavior: 'smooth'
+                });
+            }
+
+            // Event listeners for buttons
+            document.querySelector('.tag-slider-nav-prev').addEventListener('click', () => slideTags(-1));
+            document.querySelector('.tag-slider-nav-next').addEventListener('click', () => slideTags(1));
+        });
+    </script>
+}
+

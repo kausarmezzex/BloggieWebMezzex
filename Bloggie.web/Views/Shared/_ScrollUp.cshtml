@@ -1,0 +1,36 @@
+﻿<style>
+    .scroll-up-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000; /* Ensure the button is above other content */
+    }
+</style>
+
+<button id="scrollUpBtn" class="btn btn-primary scroll-up-btn" style="display: none;">
+    <i class="bi bi-arrow-up-short"></i>
+</button>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const scrollUpBtn = document.getElementById('scrollUpBtn');
+
+        // Show the scroll-up button when the page is scrolled down
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 100) {
+                scrollUpBtn.style.display = 'block';
+            } else {
+                scrollUpBtn.style.display = 'none';
+            }
+        });
+
+        // Scroll to the top of the page when the button is clicked
+        scrollUpBtn.addEventListener('click', function () {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth' // Smooth scrolling animation
+            });
+        });
+    });
+</script>
+

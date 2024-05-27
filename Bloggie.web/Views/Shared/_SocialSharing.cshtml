@@ -1,0 +1,21 @@
+﻿@model string
+@{
+    string currentUrl = Context.Request.Scheme + "://" + Context.Request.Host + Context.Request.Path;
+    string encodedUrl = System.Net.WebUtility.UrlEncode(currentUrl);
+}
+
+<aside class="socialsharing d-flex">
+    <a href="https://www.facebook.com/sharer/sharer.php?u=@encodedUrl" class="btn btn-primary me-2" target="_blank" rel="noopener noreferrer">
+        <i class="bi bi-facebook"></i> <span class="d-none d-md-inline">Share on Facebook</span>
+    </a>
+    <a href="https://twitter.com/intent/tweet?url=@encodedUrl" class="btn btn-info me-2" target="_blank" rel="noopener noreferrer">
+        <i class="bi bi-twitter"></i> <span class="d-none d-md-inline">Share on Twitter</span>
+    </a>
+    <a href="https://www.instagram.com/?url=@encodedUrl" class="btn btn-danger me-2" target="_blank" rel="noopener noreferrer">
+        <i class="bi bi-instagram"></i> <span class="d-none d-md-inline">Share on Instagram</span>
+    </a>
+    <a href="mailto:?subject=@Model&body=@encodedUrl" class="btn btn-secondary me-2" target="_blank" rel="noopener noreferrer">
+        <i class="bi bi-envelope"></i> <span class="d-none d-md-inline">Share via Email</span>
+    </a>
+</aside>
+
