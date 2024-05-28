@@ -23,6 +23,7 @@ namespace Bloggie.web.Controllers
         {
             var existingLike = await blogPostLikeRepository.GetLikeForBlogByUser(addLikeRequest.BlogPostId, addLikeRequest.UserId);
 
+
             if (existingLike != null)
             {
                 await blogPostLikeRepository.RemoveLike(existingLike);
@@ -32,7 +33,7 @@ namespace Bloggie.web.Controllers
                 var model = new BlogPostLike
                 {
                     BlogPostId = addLikeRequest.BlogPostId,
-                    UserId = addLikeRequest.UserId
+                    UserId = addLikeRequest.UserId,
                 };
                 await blogPostLikeRepository.AddLikeForBlog(model);
             }

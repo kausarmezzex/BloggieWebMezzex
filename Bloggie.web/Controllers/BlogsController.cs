@@ -4,6 +4,7 @@ using Bloggie.web.Models.ViewModel;
 using Bloggie.web.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +49,10 @@ namespace Bloggie.web.Controllers
 
             // Fetch related posts by tag
             var relatedPosts = await _blogPostRepository.GetPostsByTagAsync(tagName, blogPost.Id);
-
+            var blogAll = await _blogPostRepository.GetAllPostsAsync();
+            blogAll = blogAll.OrderByDescending(p=> p.Likes).ToList();
+            const int topNPosts = 3;
+            var famousPosts = blogAll.Take(topNPosts);
             var blogDetailsViewModel = new BlogDetailsViewModel
             {
                 Id = blogPost.Id,

@@ -7,5 +7,6 @@
 
         public Guid UserId { get; set; }
 
+
     }
 }
