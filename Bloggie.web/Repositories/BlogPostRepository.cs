@@ -92,6 +92,7 @@ namespace Bloggie.web.Repositories
                 existingPost.MetaDescription = blogPost.MetaDescription;
                 existingPost.MetaKeywords = blogPost.MetaKeywords;
                 existingPost.MetaTitle = blogPost.MetaTitle;
+                existingPost.ScheduledPublishDate = blogPost.ScheduledPublishDate;
                 await _dbContext.SaveChangesAsync();
                 return existingPost;
             }

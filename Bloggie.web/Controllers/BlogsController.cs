@@ -69,7 +69,7 @@ namespace Bloggie.web.Controllers
                 MetaDescription = blogPost.MetaDescription,
                 MetaTitle = blogPost.MetaTitle,
                 TagName = tagName,
-                RelatedPosts = relatedPosts.ToList()
+                RelatedPosts = relatedPosts.ToList(),
             };
 
             return View(blogDetailsViewModel);
