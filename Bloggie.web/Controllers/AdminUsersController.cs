@@ -1,5 +1,6 @@
 ﻿using Bloggie.web.Models.ViewModel;
 using Bloggie.web.Repositories;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +25,7 @@ namespace Bloggie.web.Controllers
         public async Task<IActionResult> List()
         {
             var users = await userRepository.getAll();
+
             var userViewModel = MapToUserViewModel(users);
             return View(userViewModel);
         }
@@ -72,13 +74,15 @@ namespace Bloggie.web.Controllers
 
             foreach (var user in users)
             {
+
                 userViewModel.Users.Add(new Models.ViewModel.User
                 {
                     Id = Guid.Parse(user.Id),
                     Username = user.UserName,
-                    EmailAddress = user.Email
+                    EmailAddress = user.Email,
                 });
             }
+
 
             return userViewModel;
         }
@@ -88,7 +92,7 @@ namespace Bloggie.web.Controllers
             var identityUser = new IdentityUser
             {
                 UserName = userViewModel.Username,
-                Email = userViewModel.Email
+                Email = userViewModel.Email,
             };
 
             var identityResult = await userManager.CreateAsync(identityUser, userViewModel.Password);

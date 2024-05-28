@@ -1,0 +1,93 @@
+﻿
+/* Custom CSS for responsive heading */
+@media (max-width: 576px) {
+    .blog-heading {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+}
+
+@media (min-width: 577px) {
+    .blog-heading {
+        font-size: 2.5rem;
+    }
+}
+
+
+
+
+/* Custom CSS for responsive heading in main blog content */
+.blog-details-content h1,
+.blog-details-content h2,
+.blog-details-content h3,
+.blog-details-content h4,
+.blog-details-content h5,
+.blog-details-content h6 {
+    font-weight: bold;
+}
+
+@media (max-width: 576px) {
+    .blog-heading {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .blog-details-content h1 {
+        font-size: 1.75rem;
+    }
+
+    .blog-details-content h2 {
+        font-size: 1.3rem;
+    }
+
+    .blog-details-content h3 {
+        font-size: 1.25rem;
+    }
+
+    .blog-details-content h4 {
+        font-size: 1.125rem;
+    }
+
+    .blog-details-content h5 {
+        font-size: 1rem;
+    }
+
+    .blog-details-content h6 {
+        font-size: 0.875rem;
+    }
+}
+
+@media (min-width: 577px) {
+    .blog-heading {
+        font-size: 2.5rem;
+    }
+
+    .blog-details-content h1 {
+        font-size: 2.2rem;
+    }
+
+    .blog-details-content h2 {
+        font-size: 2rem;
+    }
+
+    .blog-details-content h3 {
+        font-size: 1.75rem;
+    }
+
+    .blog-details-content h4 {
+        font-size: 1.5rem;
+    }
+
+    .blog-details-content h5 {
+        font-size: 1.25rem;
+    }
+
+    .blog-details-content h6 {
+        font-size: 1rem;
+    }
+}
+
+.carousel-item .card-img-top {
+    height: 150px; /* Adjust the height as needed */
+    object-fit: cover; /* Ensures the image covers the entire container */
+}

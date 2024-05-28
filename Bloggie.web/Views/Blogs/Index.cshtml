@@ -9,14 +9,7 @@
     ViewData["MetaTitle"] = Model.MetaTitle;
     ViewData["MetaDes"] = Model.MetaDescription;
 }
-
-<style>
-    /* Custom CSS for fixing image size */
-    .carousel-item .card-img-top {
-        height: 150px; /* Adjust the height as needed */
-        object-fit: cover; /* Ensures the image covers the entire container */
-    }
-</style>
+<link href="~/css/blogdetails.css" rel="stylesheet" />
 
 <div class="container my-5">
     <div class="row justify-content-center">
@@ -25,7 +18,7 @@
                 <div class="card-body">
                     @if (Model != null)
                     {
-                        <h1 class="mb-3">@Model.Heading</h1>
+                        <h1 class="mb-3 blog-heading">@Model.Heading</h1>
 
                         <div class="d-flex justify-content-between mb-3">
                             <span class="text-secondary">@Model.Author</span>
@@ -73,7 +66,7 @@
                             }
                         </div>
 
-                        <img src="@Model.FeaturedImageUrl" class="d-block img-fluid mb-3" />
+                        <img src="@Model.FeaturedImageUrl" class="img-fluid mb-3 d-flex justify-content-center" />
 
                         <div class="mb-3 blog-details-content">
                             @Html.Raw(Model.Content)
@@ -152,11 +145,13 @@
                                                         <img src="@Model.RelatedPosts[i].FeaturedImageUrl" class="card-img-top" alt="@Model.RelatedPosts[i].Heading">
                                                         <div class="card-body d-flex flex-column">
                                                             @{
-                                                                var titleClass1 = Model.RelatedPosts[i].Heading.Length < 70 ? "card-title mb-4" : "card-title";
+                                                                var heading1 = Model.RelatedPosts[i].Heading;
+                                                                var truncatedHeading1 = heading1.Length > 60 ? heading1.Substring(0, 60) + "..." : heading1;
+                                                                var titleClass2 = heading1.Length > 49 ? "card-title" : "card-title mb-4";
                                                             }
-                                                            <h6 class="@titleClass1">
+                                                            <h6 class="@titleClass2">
                                                                 <a asp-area="" asp-controller="Blogs" asp-action="Index" asp-route-urlHandle="@Model.RelatedPosts[i].UrlHandle" class="text-decoration-none text-dark">
-                                                                    <span class="fw-bold">@Model.RelatedPosts[i].Heading</span>
+                                                                    <span>@truncatedHeading1</span>
                                                                 </a>
                                                             </h6>
                                                             <a class="btn btn-dark btn-sm"
@@ -173,13 +168,16 @@
                                                             <img src="@Model.RelatedPosts[i + 1].FeaturedImageUrl" class="card-img-top" alt="@Model.RelatedPosts[i + 1].Heading">
                                                             <div class="card-body d-flex flex-column">
                                                                 @{
-                                                                    var titleClass2 = Model.RelatedPosts[i + 1].Heading.Length < 70  ? "card-title mb-4" : "card-title";
+                                                                    var heading2 = Model.RelatedPosts[i + 1].Heading;
+                                                                    var truncatedHeading2 = heading2.Length > 60 ? heading2.Substring(0, 60) + "..." : heading2;
+                                                                    var titleClass3 = heading2.Length > 49 ? "card-title" : "card-title mb-4";
                                                                 }
-                                                                <h6 class="@titleClass2">
+                                                                <h6 class="@titleClass3">
                                                                     <a asp-area="" asp-controller="Blogs" asp-action="Index" asp-route-urlHandle="@Model.RelatedPosts[i + 1].UrlHandle" class="text-decoration-none text-dark">
-                                                                        <span class="fw-bold">@Model.RelatedPosts[i + 1].Heading</span>
+                                                                        <span>@truncatedHeading2</span>
                                                                     </a>
                                                                 </h6>
+
                                                                 <a class="btn btn-dark btn-sm"
                                                                    asp-controller="Blogs"
                                                                    asp-action="Index"
@@ -195,11 +193,13 @@
                                                             <img src="@Model.RelatedPosts[i + 2].FeaturedImageUrl" class="card-img-top" alt="@Model.RelatedPosts[i + 2].Heading">
                                                             <div class="card-body d-flex flex-column">
                                                                 @{
-                                                                    var titleClass3 = Model.RelatedPosts[i + 2].Heading.Length < 70 ? "card-title mb-4" : "card-title";
+                                                                    var heading3 = Model.RelatedPosts[i + 2].Heading;
+                                                                    var truncatedHeading3 = heading3.Length > 60 ? heading3.Substring(0, 60) + "..." : heading3;
+                                                                    var titleClass4 = heading3.Length > 49 ? "card-title" : "card-title mb-4";
                                                                 }
-                                                                <h6 class="@titleClass3">
+                                                                <h6 class="@titleClass4">
                                                                     <a asp-area="" asp-controller="Blogs" asp-action="Index" asp-route-urlHandle="@Model.RelatedPosts[i + 2].UrlHandle" class="text-decoration-none text-dark">
-                                                                        <span class="fw-bold">@Model.RelatedPosts[i + 2].Heading</span>
+                                                                        <span>@truncatedHeading3</span>
                                                                     </a>
                                                                 </h6>
                                                                 <a class="btn btn-dark btn-sm"
@@ -225,13 +225,12 @@
                                     <span class="visually-hidden">Next</span>
                                 </a>
                             </div>
-
                         }
                         else
                         {
                             <p>Related Blog post not found!</p>
                         }
-
+                      
                     }
                     else
                     {
@@ -246,7 +245,6 @@
 
 @section Scripts {
     <script>
-      
         document.addEventListener("DOMContentLoaded", function () {
             const btnLikeElement = document.getElementById('btnLike');
             const totalLikeElement = document.getElementById('totalLikes');
@@ -269,7 +267,6 @@
                             totalLikeElement.innerHTML = ""; // Clear the content if there are 0 likes
                         }
                     });
-
             }
 
             async function updateLikeStatus(isLiked) {
@@ -327,7 +324,6 @@
             // Fetch and update total likes when the page loads
             getTotalLikes();
         });
-
-
     </script>
 }
+

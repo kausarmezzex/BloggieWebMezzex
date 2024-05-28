@@ -48,6 +48,7 @@ namespace Bloggie.web.Controllers
 
             // Fetch related posts by tag
             var relatedPosts = await _blogPostRepository.GetPostsByTagAsync(tagName, blogPost.Id);
+
             var blogDetailsViewModel = new BlogDetailsViewModel
             {
                 Id = blogPost.Id,

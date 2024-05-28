@@ -32,6 +32,6 @@ namespace Bloggie.web.Models.ViewModel
         public int TotalComments { get; set; }
         public string TagName { get; set; }
         public List<BlogPost> RelatedPosts { get; set; }
-
+        public List<BlogPost> FamousPosts { get; set; } // Add this property
     }
 }

@@ -7,5 +7,6 @@
         public string Password { get; set; }
         public string Email { get; set; }
         public bool AdminRoleCheckbox { get; set; }
+        public string UserRole { get; set; }
     }
 }
