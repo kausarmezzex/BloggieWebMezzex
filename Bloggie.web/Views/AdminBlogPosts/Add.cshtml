@@ -3,7 +3,6 @@
 @inject SignInManager<IdentityUser> signInManager
 @inject UserManager<IdentityUser> userManager
 
-
 @{
     ViewData["Title"] = "Add Post";
     Layout = "~/Views/Shared/AdminLayout.cshtml";
@@ -70,11 +69,12 @@
                                 <input type="text" class="form-control" id="urlHandle" asp-for="UrlHandle" />
                             </div>
 
-                            <div class="mb-3">
+                            <div class="form-group mb-3">
                                 <label class="form-label">Published Date</label>
-                                <input type="date" class="form-control" id="publishedDate" asp-for="PublishDate" />
+                                <input type="datetime-local" class="form-control" id="publishedDate" asp-for="PublishDate" value="@(DateTime.Now.ToString("yyyy-MM-ddTHH:mm"))" />
                             </div>
-                            <div class="form-group">
+
+                            <div class="form-group mb-3">
                                 <label asp-for="ScheduledPublishDate"></label>
                                 <input type="datetime-local" asp-for="ScheduledPublishDate" class="form-control" />
                                 <span asp-validation-for="ScheduledPublishDate" class="text-danger"></span>
@@ -132,20 +132,19 @@
 <partial name="_ScrollUp" />
 @section Scripts {
     <script>
-
-        document.getElementById('author').value = '@userManager.GetUserName(User)';
         var editor = new FroalaEditor('#content', {
             imageUploadURL: '/api/images',
-            heightMin: 400,
-            imageUploadParams: {
-                id: 'my_editor'
-            }
+            heightMin: 400 // Adjust the minimum height of the editor
         });
 
+        // Elements for featured image upload and display
         const featuredUploadElement = document.getElementById('featuredImageUpload');
         const featuredImageUrlElement = document.getElementById('featuredImageUrl');
         const featuredImageDisplayElement = document.getElementById('featuredImageDisplay');
-
+        // Set the author field with the logged-in username
+        document.getElementById('author').value = '@userManager.GetUserName(User)';
+     
+        // Function to upload featured image and set URL
         async function uploadFeaturedImage(e) {
             let data = new FormData();
             data.append('file', e.target.files[0]);
@@ -164,6 +163,26 @@
                 });
         }
 
+        // Attach event listener for featured image upload
         featuredUploadElement.addEventListener('change', uploadFeaturedImage);
+
+        // Function to convert text to a SEO-friendly slug
+        function createSlug(text) {
+            return text.toString().toLowerCase()
+                .replace(/\s+/g, '-')           // Replace spaces with -
+                .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+                .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+                .replace(/^-+/, '')             // Trim - from start of text
+                .replace(/-+$/, '');            // Trim - from end of text
+        }
+
+        // Elements for heading and URL handle
+        const headingElement = document.getElementById('heading');
+        const urlHandleElement = document.getElementById('urlHandle');
+
+        // Update URL handle when heading is changed
+        headingElement.addEventListener('input', function () {
+            urlHandleElement.value = createSlug(headingElement.value);
+        });
     </script>
 }
