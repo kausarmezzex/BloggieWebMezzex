@@ -19,9 +19,9 @@ namespace Bloggie.web.Controllers
             _tagRepository = tagRepository;
         }
 
-        public async Task<IActionResult> Index(string selectedTagName, string searchQuery = null, int pageSize = 9, int pageNumber = 1)
+        public async Task<IActionResult> Index(string selectedTagName, string query = null, int pageSize = 9, int pageNumber = 1)
         {
-            var model = await GetHomeViewModelAsync(selectedTagName, searchQuery, pageSize, pageNumber);
+            var model = await GetHomeViewModelAsync(selectedTagName, query, pageSize, pageNumber);
             return View(model);
         }
 

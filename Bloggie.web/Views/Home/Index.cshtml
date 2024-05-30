@@ -72,7 +72,7 @@
             <div class="row justify-content-center">
                 <div class="col-12">
                     <div class="dropdown">
-                        @Html.DropDownList("tagName", new SelectList(Model.Tags, "DisplayName", "DisplayName", ViewBag.SelectedTagName), "Select Tag", new { @class = "form-select", onchange = "this.form.submit()" })
+                        @Html.DropDownList("tagName", new SelectList(Model.Tags, "Name", "Name", ViewBag.SelectedTagName), "Select Tag", new { @class = "form-select", onchange = "this.form.submit()" })
                     </div>
                 </div>
             </div>

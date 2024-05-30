@@ -36,21 +36,14 @@ namespace Bloggie.web.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(AddBlogPostRequest addBlogPostRequest)
         {
-            try
+            return await HandleBlogPostOperation(async () =>
             {
-                var blogPost = MapAddBlogPostRequestToDomain(addBlogPostRequest);
+                var blogPost = MapToDomain(addBlogPostRequest);
                 blogPost.Tags = await GetSelectedTagsAsync(addBlogPostRequest.SelectedTags);
-
                 await _blogPostRepository.AddAsync(blogPost);
-
                 TempData["success"] = "Blog post created successfully.";
-            }
-            catch (Exception ex)
-            {
-                TempData["error"] = $"An error occurred while creating the blog post: {ex.Message}";
-            }
-
-            return RedirectToAction("Add");
+                return RedirectToAction("Add");
+            });
         }
 
         [Authorize(Roles = "Admin")]
@@ -105,7 +98,7 @@ namespace Bloggie.web.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditBlogPostRequest editBlogPost)
         {
-            try
+            return await HandleBlogPostOperation(async () =>
             {
                 var originalBlogPost = await _blogPostRepository.GetByIdAsync(editBlogPost.Id);
                 if (originalBlogPost == null)
@@ -114,23 +107,8 @@ namespace Bloggie.web.Controllers
                     return NotFound();
                 }
 
-                var updatedBlogPost = MapEditBlogPostRequestToDomain(editBlogPost);
-                // Map Tags to Domain Model
-                var selectedTags = new List<Tag>();
-                foreach (var selectedTag in editBlogPost.SelectedTags)
-                {
-                    if (Guid.TryParse(selectedTag, out var tag))
-                    {
-                        var foundTag = await _tagRepository.GetAsync(tag);
-                        if (foundTag != null)
-                        {
-                            selectedTags.Add(foundTag);
-                        }
-                    }
-                }
-
-                updatedBlogPost.Tags = selectedTags;
-
+                var updatedBlogPost = MapToDomain(editBlogPost);
+                updatedBlogPost.Tags = await GetSelectedTagsAsync(editBlogPost.SelectedTags);
 
                 var changes = DetectChanges(originalBlogPost, updatedBlogPost);
                 var editDescription = string.Join("; ", changes);
@@ -139,19 +117,15 @@ namespace Bloggie.web.Controllers
                 if (updatedBlog != null)
                 {
                     await LogEditAsync(editBlogPost.Id, editDescription, updatedBlog);
-
                     TempData["success"] = "Blog post updated successfully.";
                     return RedirectToAction("List");
                 }
-
-                TempData["error"] = "An error occurred while updating the blog post.";
-            }
-            catch (Exception ex)
-            {
-                TempData["error"] = $"An error occurred: {ex.Message}";
-            }
-
-            return RedirectToAction("Edit", new { id = editBlogPost.Id });
+                else
+                {
+                    TempData["error"] = "An error occurred while updating the blog post.";
+                    return RedirectToAction("Edit", new { id = editBlogPost.Id });
+                }
+            });
         }
 
         [Authorize(Roles = "Admin")]
@@ -192,44 +166,44 @@ namespace Bloggie.web.Controllers
             return selectedTags;
         }
 
-        private BlogPost MapAddBlogPostRequestToDomain(AddBlogPostRequest addBlogPostRequest)
+        private BlogPost MapToDomain(AddBlogPostRequest request)
         {
             return new BlogPost
             {
-                Heading = addBlogPostRequest.Heading,
-                PageTitle = addBlogPostRequest.PageTitle,
-                Content = addBlogPostRequest.Content,
-                ShortDescription = addBlogPostRequest.ShortDescription,
-                FeaturedImageUrl = addBlogPostRequest.FeaturedImageUrl,
-                UrlHandle = addBlogPostRequest.UrlHandle,
-                PublishDate = addBlogPostRequest.PublishDate,
-                Author = addBlogPostRequest.Author,
-                Visible = addBlogPostRequest.Visible,
-                MetaDescription = addBlogPostRequest.MetaDescription,
-                MetaKeywords = addBlogPostRequest.MetaKeywords,
-                MetaTitle = addBlogPostRequest.MetaTitle,
-                ScheduledPublishDate = addBlogPostRequest.ScheduledPublishDate,
+                Heading = request.Heading,
+                PageTitle = request.PageTitle,
+                Content = request.Content,
+                ShortDescription = request.ShortDescription,
+                FeaturedImageUrl = request.FeaturedImageUrl,
+                UrlHandle = request.UrlHandle,
+                PublishDate = request.PublishDate,
+                Author = request.Author,
+                Visible = request.Visible,
+                MetaDescription = request.MetaDescription,
+                MetaKeywords = request.MetaKeywords,
+                MetaTitle = request.MetaTitle,
+                ScheduledPublishDate = request.ScheduledPublishDate,
             };
         }
 
-        private BlogPost MapEditBlogPostRequestToDomain(EditBlogPostRequest editBlogPostRequest)
+        private BlogPost MapToDomain(EditBlogPostRequest request)
         {
             return new BlogPost
             {
-                Id = editBlogPostRequest.Id,
-                Heading = editBlogPostRequest.Heading,
-                PageTitle = editBlogPostRequest.PageTitle,
-                Content = editBlogPostRequest.Content,
-                ShortDescription = editBlogPostRequest.ShortDescription,
-                FeaturedImageUrl = editBlogPostRequest.FeaturedImageUrl,
-                UrlHandle = editBlogPostRequest.UrlHandle,
-                PublishDate = editBlogPostRequest.PublishDate,
-                Author = editBlogPostRequest.Author,
-                Visible = editBlogPostRequest.Visible,
-                MetaDescription = editBlogPostRequest.MetaDescription,
-                MetaKeywords = editBlogPostRequest.MetaKeywords,
-                MetaTitle = editBlogPostRequest.MetaTitle,
-                ScheduledPublishDate = editBlogPostRequest.ScheduledPublishDate,
+                Id = request.Id,
+                Heading = request.Heading,
+                PageTitle = request.PageTitle,
+                Content = request.Content,
+                ShortDescription = request.ShortDescription,
+                FeaturedImageUrl = request.FeaturedImageUrl,
+                UrlHandle = request.UrlHandle,
+                PublishDate = request.PublishDate,
+                Author = request.Author,
+                Visible = request.Visible,
+                MetaDescription = request.MetaDescription,
+                MetaKeywords = request.MetaKeywords,
+                MetaTitle = request.MetaTitle,
+                ScheduledPublishDate = request.ScheduledPublishDate,
             };
         }
 
@@ -294,6 +268,19 @@ namespace Bloggie.web.Controllers
             };
 
             await _postEditLogRepository.AddPostEditLog(editLog);
+        }
+
+        private async Task<IActionResult> HandleBlogPostOperation(Func<Task<IActionResult>> blogPostOperation)
+        {
+            try
+            {
+                return await blogPostOperation();
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = $"An error occurred: {ex.Message}";
+                return RedirectToAction("Error");
+            }
         }
     }
 }
