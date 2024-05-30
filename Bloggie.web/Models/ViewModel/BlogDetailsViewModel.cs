@@ -31,7 +31,9 @@ namespace Bloggie.web.Models.ViewModel
 
         public int TotalComments { get; set; }
         public string TagName { get; set; }
-        public List<BlogPost> RelatedPosts { get; set; }
+        // Use RelatedPostViewModel for related posts and famous posts
+        public List<RelatedPostViewModel> RelatedPosts { get; set; }
+        public List<RelatedPostViewModel> FamousPost { get; set; }
 
     }
 }

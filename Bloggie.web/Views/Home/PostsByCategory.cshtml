@@ -26,16 +26,19 @@
                     {
                         <div class="col-md-4 mb-4">
                             <div class="card h-100 border border-dark rounded shadow">
-                                <a asp-area=""
-                                   asp-controller="Blogs"
+                                <a asp-controller="Blogs"
                                    asp-action="Index"
+                                   asp-route-tagName="@post.Tags.FirstOrDefault()?.Name"
                                    asp-route-urlHandle="@post.UrlHandle">
                                     <img src="@post.FeaturedImageUrl" class="card-img-top custom-card-img" alt="Featured Image">
                                 </a>
 
                                 <div class="card-body">
                                     <h6 class="card-title @((post.Heading.Length < 44) ? "mb-4" : "")">
-                                        <a asp-area="" asp-controller="Blogs" asp-action="Index" asp-route-urlHandle="@post.UrlHandle" class="text-decoration-none text-dark">
+                                        <a asp-controller="Blogs"
+                                           asp-action="Index"
+                                           asp-route-tagName="@post.Tags.FirstOrDefault()?.Name"
+                                           asp-route-urlHandle="@post.UrlHandle" class="text-decoration-none text-dark">
                                             <span class="fw-bold">@post.Heading</span>
                                         </a>
                                     </h6>
@@ -54,9 +57,9 @@
 
                                     <div class="d-flex justify-content-between align-items-center mt-4">
                                         <a class="btn btn-dark btn-sm"
-                                           asp-area=""
                                            asp-controller="Blogs"
                                            asp-action="Index"
+                                           asp-route-tagName="@post.Tags.FirstOrDefault()?.Name"
                                            asp-route-urlHandle="@post.UrlHandle">Read More</a>
 
                                         <div class="tags">

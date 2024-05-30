@@ -24,13 +24,11 @@
                             <span class="text-secondary">@Model.Author</span>
                             <span class="text-secondary">@Model.PublishDate.ToShortDateString()</span>
                         </div>
-                        <div class="mb-3">
-                            @{
-                                await Html.RenderPartialAsync("_SocialSharing", ViewData["Title"]);
-                            }
-                        </div>
+
+                        @await Html.PartialAsync("_SocialSharing", ViewData["Title"])
+
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center mt-2">
                                 <a id="btnLike" class="btn btn-outline-primary me-2" style="cursor: pointer;">
                                     <i class="bi bi-hand-thumbs-up"></i> Like
                                 </a>
@@ -59,6 +57,7 @@
                                 <span class="text-secondary">@Model.TotalComments</span> comments
                             </div>
                         </div>
+
                         <div class="mb-3 d-flex">
                             @foreach (var tag in Model.Tags)
                             {
@@ -66,7 +65,7 @@
                             }
                         </div>
 
-                        <img src="@Model.FeaturedImageUrl" class="img-fluid mb-3 d-flex justify-content-center" />
+                        <img src="@Model.FeaturedImageUrl" class="d-block img-fluid mb-3" />
 
                         <div class="mb-3 blog-details-content">
                             @Html.Raw(Model.Content)
@@ -131,91 +130,24 @@
                                 }
                             }
                         </div>
+
                         @if (Model.RelatedPosts != null && Model.RelatedPosts.Any())
                         {
-                            <h2 class="my-4">Related Posts</h2> <!-- Add this line for the heading -->
+                            <h2 class="my-4">Related Posts</h2>
                             <div id="relatedPostsCarousel" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner">
-                                    @for (int i = 0; i < Model.RelatedPosts.Count; i++)
+                                    @for (int i = 0; i < Model.RelatedPosts.Count; i += 3)
                                     {
                                         <div class="carousel-item @(i == 0 ? "active" : "")">
                                             <div class="row">
-                                                <div class="col-12 col-md-4">
-                                                    <div class="card h-100">
-                                                        <img src="@Model.RelatedPosts[i].FeaturedImageUrl" class="card-img-top" alt="@Model.RelatedPosts[i].Heading">
-                                                        <div class="card-body d-flex flex-column">
-                                                            @{
-                                                                var heading1 = Model.RelatedPosts[i].Heading;
-                                                                var truncatedHeading1 = heading1.Length > 60 ? heading1.Substring(0, 60) + "..." : heading1;
-                                                                var titleClass2 = heading1.Length > 49 ? "card-title" : "card-title mb-4";
-                                                            }
-                                                            <h6 class="@titleClass2">
-                                                                <a asp-area="" asp-controller="Blogs" asp-action="Index" asp-route-urlHandle="@Model.RelatedPosts[i].UrlHandle" class="text-decoration-none text-dark">
-                                                                    <span>@truncatedHeading1</span>
-                                                                </a>
-                                                            </h6>
-                                                            <a class="btn btn-dark btn-sm"
-                                                               asp-controller="Blogs"
-                                                               asp-action="Index"
-                                                               asp-route-urlHandle="@Model.RelatedPosts[i].UrlHandle">Read More</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                @if (i + 1 < Model.RelatedPosts.Count)
+                                                @for (int j = i; j < i + 3 && j < Model.RelatedPosts.Count; j++)
                                                 {
-                                                    <div class="col-12 col-md-4 d-none d-md-block">
-                                                        <div class="card h-100">
-                                                            <img src="@Model.RelatedPosts[i + 1].FeaturedImageUrl" class="card-img-top" alt="@Model.RelatedPosts[i + 1].Heading">
-                                                            <div class="card-body d-flex flex-column">
-                                                                @{
-                                                                    var heading2 = Model.RelatedPosts[i + 1].Heading;
-                                                                    var truncatedHeading2 = heading2.Length > 60 ? heading2.Substring(0, 60) + "..." : heading2;
-                                                                    var titleClass3 = heading2.Length > 49 ? "card-title" : "card-title mb-4";
-                                                                }
-                                                                <h6 class="@titleClass3">
-                                                                    <a asp-area="" asp-controller="Blogs" asp-action="Index" asp-route-urlHandle="@Model.RelatedPosts[i + 1].UrlHandle" class="text-decoration-none text-dark">
-                                                                        <span>@truncatedHeading2</span>
-                                                                    </a>
-                                                                </h6>
-
-                                                                <a class="btn btn-dark btn-sm"
-                                                                   asp-controller="Blogs"
-                                                                   asp-action="Index"
-                                                                   asp-route-urlHandle="@Model.RelatedPosts[i + 1].UrlHandle">Read More</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                }
-                                                @if (i + 2 < Model.RelatedPosts.Count)
-                                                {
-                                                    <div class="col-12 col-md-4 d-none d-md-block">
-                                                        <div class="card h-100">
-                                                            <img src="@Model.RelatedPosts[i + 2].FeaturedImageUrl" class="card-img-top" alt="@Model.RelatedPosts[i + 2].Heading">
-                                                            <div class="card-body d-flex flex-column">
-                                                                @{
-                                                                    var heading3 = Model.RelatedPosts[i + 2].Heading;
-                                                                    var truncatedHeading3 = heading3.Length > 60 ? heading3.Substring(0, 60) + "..." : heading3;
-                                                                    var titleClass4 = heading3.Length > 49 ? "card-title" : "card-title mb-4";
-                                                                }
-                                                                <h6 class="@titleClass4">
-                                                                    <a asp-area="" asp-controller="Blogs" asp-action="Index" asp-route-urlHandle="@Model.RelatedPosts[i + 2].UrlHandle" class="text-decoration-none text-dark">
-                                                                        <span>@truncatedHeading3</span>
-                                                                    </a>
-                                                                </h6>
-                                                                <a class="btn btn-dark btn-sm"
-                                                                   asp-controller="Blogs"
-                                                                   asp-action="Index"
-                                                                   asp-route-urlHandle="@Model.RelatedPosts[i + 2].UrlHandle">Read More</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    @await Html.PartialAsync("_RelatedPostItem", Model.RelatedPosts[j])
                                                 }
                                             </div>
                                         </div>
-                                        i += 2; // Skip the next two posts since they're already included in this slide for desktop view
                                     }
                                 </div>
-                                <!-- Carousel controls -->
                                 <a class="carousel-control-prev" href="#relatedPostsCarousel" role="button" data-bs-slide="prev">
                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                     <span class="visually-hidden">Previous</span>
@@ -230,21 +162,49 @@
                         {
                             <p>Related Blog post not found!</p>
                         }
-                      
-                    }
-                    else
-                    {
-                        <p>Blog post not found!</p>
+
+                        @if (Model.FamousPost != null && Model.FamousPost.Any())
+                        {
+                            <h2 class="my-4">Most Liked Posts</h2>
+                            <div id="famousPostsCarousel" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    @for (int i = 0; i < Model.FamousPost.Count; i += 3)
+                                    {
+                                        <div class="carousel-item @(i == 0 ? "active" : "")">
+                                            <div class="row">
+                                                @for (int j = i; j < i + 3 && j < Model.FamousPost.Count; j++)
+                                                {
+                                                    @await Html.PartialAsync("_RelatedPostItem", Model.FamousPost[j])
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <a class="carousel-control-prev" href="#famousPostsCarousel" role="button" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#famousPostsCarousel" role="button" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <p>Most liked blog post not found!</p>
+                        }
                     }
                 </div>
             </div>
         </div>
     </div>
 </div>
-<partial name="_ScrollUp" />
 
+<partial name="_ScrollUp" />
 @section Scripts {
     <script>
+
         document.addEventListener("DOMContentLoaded", function () {
             const btnLikeElement = document.getElementById('btnLike');
             const totalLikeElement = document.getElementById('totalLikes');
@@ -267,6 +227,7 @@
                             totalLikeElement.innerHTML = ""; // Clear the content if there are 0 likes
                         }
                     });
+
             }
 
             async function updateLikeStatus(isLiked) {
@@ -324,6 +285,7 @@
             // Fetch and update total likes when the page loads
             getTotalLikes();
         });
+
+
     </script>
 }
-

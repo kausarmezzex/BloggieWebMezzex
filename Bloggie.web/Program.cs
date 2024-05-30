@@ -57,7 +57,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "Blog",
+    name: "blog",
     pattern: "blogs/{tagName}/{urlHandle}",
     defaults: new { controller = "Blogs", action = "Index" });
 

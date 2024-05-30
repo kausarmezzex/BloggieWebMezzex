@@ -126,5 +126,10 @@ namespace Bloggie.web.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<BlogPost>> GetFamousPost()
+        {
+            return await _dbContext.BlogPosts.OrderByDescending(post => post.Likes.Count).ToListAsync();
+        }
+
     }
 }

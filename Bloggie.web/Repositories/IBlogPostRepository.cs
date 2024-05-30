@@ -15,5 +15,6 @@ namespace Bloggie.web.Repositories
         Task<int> CountAsync();
         Task<IEnumerable<BlogPost>> GetScheduledPostsAsync();
         Task<IEnumerable<BlogPost>> GetPostsByTagAsync(string tagName, Guid blogId);
+        Task<IEnumerable<BlogPost>> GetFamousPost();
     }
 }
