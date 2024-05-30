@@ -8,8 +8,12 @@
 <div class="bg-secondary bg-opacity-10 py-2 mb-4">
     <div class="container">
         <h1 class="text-center">Post Edit Logs - Admin Functionality</h1>
+        <div class="text-end">
+            <a href="@Url.Action("ExportToExcel", "AdminDashboard")" class="btn btn-success">Export to Excel</a>
+        </div>
     </div>
 </div>
+
 @if (Model.Any())
 {
     <table class="table">
@@ -32,18 +36,10 @@
                     <td>@log.BlogPost.Author</td>
                     <td>@log.AdminEmail</td>
                     <td>@log.EditTimestamp</td>
-                    @if (log.BlogPost.Visible == true)
-                    {
-                        <td>Yes</td>
-                    }
-                    else
-                    {
-                        <td>No</td>
-                    }
-
+                    <td>@(log.BlogPost.Visible ? "Yes" : "No")</td>
                 </tr>
                 <tr>
-                    <td colspan="5" class="text-center"><strong>Edit Description:</strong> <span style="color: blue;">@log.EditDescription</span></td>
+                    <td colspan="6" class="text-center"><strong>Edit Description:</strong> <span style="color: blue;">@log.EditDescription</span></td>
                 </tr>
             }
         </tbody>

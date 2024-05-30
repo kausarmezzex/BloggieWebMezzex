@@ -3,6 +3,7 @@ using Bloggie.web.Repositories;
 using Bloggie.web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHostedService<ScheduledPostPublisher>();
@@ -12,6 +13,8 @@ builder.Services.AddDbContext<BloggieDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BloggieDConnectionString")));
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BloggieAuthDbConnectionString")));
+
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 // Configure Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
@@ -61,8 +64,6 @@ app.MapControllerRoute(
     pattern: "blogs/{tagName}/{urlHandle}",
     defaults: new { controller = "Blogs", action = "Index" });
 
-
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -70,7 +71,6 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "admin",
     pattern: "{area:exists}/{controller=AdminDashboard}/{action=Index}/{id?}");
-
 
 app.MapControllerRoute(
     name: "category",
