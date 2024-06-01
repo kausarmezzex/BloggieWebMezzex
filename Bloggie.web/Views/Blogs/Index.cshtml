@@ -7,7 +7,7 @@
     ViewData["Title"] = Model.PageTitle;
     ViewData["MetaKeywords"] = Model.MetaKeywords;
     ViewData["MetaTitle"] = Model.MetaTitle;
-    ViewData["MetaDes"] = Model.MetaDescription;
+    ViewData["MetaDescription"] = Model.MetaDescription;
 }
 <link href="~/css/blogdetails.css" rel="stylesheet" />
 
@@ -72,9 +72,7 @@
                         </div>
 
                         <div class="mb-3">
-                            @{
-                                await Html.RenderPartialAsync("_SocialSharing", ViewData["Title"]);
-                            }
+                            @await Html.PartialAsync("_SocialSharing", ViewData["Title"])
                         </div>
 
                         <div class="card">
@@ -102,11 +100,8 @@
                                         @{
                                             string returnUrl = Url.Action("Index", "Blogs", new { urlHandle = Model.UrlHandle });
                                         }
-
                                         <a href="/Account/Login?returnUrl=@returnUrl">Login to leave a comment</a>
-
                                     </div>
-
                                 }
                             </div>
                         </div>
@@ -136,16 +131,28 @@
                             <h2 class="my-4">Related Posts</h2>
                             <div id="relatedPostsCarousel" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner">
-                                    @for (int i = 0; i < Model.RelatedPosts.Count; i += 3)
+                                    @for (int i = 0; i < Model.RelatedPosts.Count; i++)
                                     {
                                         <div class="carousel-item @(i == 0 ? "active" : "")">
                                             <div class="row">
-                                                @for (int j = i; j < i + 3 && j < Model.RelatedPosts.Count; j++)
+                                                <div class="col-12 col-md-4">
+                                                    @await Html.PartialAsync("_RelatedPostItem", Model.RelatedPosts[i])
+                                                </div>
+                                                @if (i + 1 < Model.RelatedPosts.Count)
                                                 {
-                                                    @await Html.PartialAsync("_RelatedPostItem", Model.RelatedPosts[j])
+                                                    <div class="col-12 col-md-4 d-none d-md-block">
+                                                        @await Html.PartialAsync("_RelatedPostItem", Model.RelatedPosts[i + 1])
+                                                    </div>
+                                                }
+                                                @if (i + 2 < Model.RelatedPosts.Count)
+                                                {
+                                                    <div class="col-12 col-md-4 d-none d-md-block">
+                                                        @await Html.PartialAsync("_RelatedPostItem", Model.RelatedPosts[i + 2])
+                                                    </div>
                                                 }
                                             </div>
                                         </div>
+                                        i += 2; // Skip the next two items as they are included in this slide
                                     }
                                 </div>
                                 <a class="carousel-control-prev" href="#relatedPostsCarousel" role="button" data-bs-slide="prev">
@@ -168,16 +175,28 @@
                             <h2 class="my-4">Most Liked Posts</h2>
                             <div id="famousPostsCarousel" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner">
-                                    @for (int i = 0; i < Model.FamousPost.Count; i += 3)
+                                    @for (int i = 0; i < Model.FamousPost.Count; i++)
                                     {
                                         <div class="carousel-item @(i == 0 ? "active" : "")">
                                             <div class="row">
-                                                @for (int j = i; j < i + 3 && j < Model.FamousPost.Count; j++)
+                                                <div class="col-12 col-md-4">
+                                                    @await Html.PartialAsync("_RelatedPostItem", Model.FamousPost[i])
+                                                </div>
+                                                @if (i + 1 < Model.FamousPost.Count)
                                                 {
-                                                    @await Html.PartialAsync("_RelatedPostItem", Model.FamousPost[j])
+                                                    <div class="col-12 col-md-4 d-none d-md-block">
+                                                        @await Html.PartialAsync("_RelatedPostItem", Model.FamousPost[i + 1])
+                                                    </div>
+                                                }
+                                                @if (i + 2 < Model.FamousPost.Count)
+                                                {
+                                                    <div class="col-12 col-md-4 d-none d-md-block">
+                                                        @await Html.PartialAsync("_RelatedPostItem", Model.FamousPost[i + 2])
+                                                    </div>
                                                 }
                                             </div>
                                         </div>
+                                        i += 2; // Skip the next two items as they are included in this slide
                                     }
                                 </div>
                                 <a class="carousel-control-prev" href="#famousPostsCarousel" role="button" data-bs-slide="prev">
@@ -202,9 +221,9 @@
 </div>
 
 <partial name="_ScrollUp" />
+
 @section Scripts {
     <script>
-
         document.addEventListener("DOMContentLoaded", function () {
             const btnLikeElement = document.getElementById('btnLike');
             const totalLikeElement = document.getElementById('totalLikes');
@@ -227,7 +246,6 @@
                             totalLikeElement.innerHTML = ""; // Clear the content if there are 0 likes
                         }
                     });
-
             }
 
             async function updateLikeStatus(isLiked) {
@@ -274,7 +292,7 @@
 
             // Update the initial state of the like button
             const initialLikedState = @Model.Liked.ToString().ToLower();
-            if (initialLikedState) {
+            if (initialLikedState === "true") {
                 btnLikeElement.classList.add('liked');
                 btnLikeElement.innerHTML = '<i class="bi bi-hand-thumbs-up-fill"></i> Liked';
             } else {
@@ -285,7 +303,5 @@
             // Fetch and update total likes when the page loads
             getTotalLikes();
         });
-
-
     </script>
 }

@@ -1,31 +1,4 @@
-﻿
-/* Custom CSS for responsive heading */
-@media (max-width: 576px) {
-    .blog-heading {
-        font-size: 1.5rem;
-        text-align: center;
-    }
-}
-
-@media (min-width: 577px) {
-    .blog-heading {
-        font-size: 2.5rem;
-    }
-}
-
-
-
-
-/* Custom CSS for responsive heading in main blog content */
-.blog-details-content h1,
-.blog-details-content h2,
-.blog-details-content h3,
-.blog-details-content h4,
-.blog-details-content h5,
-.blog-details-content h6 {
-    font-weight: bold;
-}
-
+﻿/* Custom CSS for responsive heading */
 @media (max-width: 576px) {
     .blog-heading {
         font-size: 1.5rem;

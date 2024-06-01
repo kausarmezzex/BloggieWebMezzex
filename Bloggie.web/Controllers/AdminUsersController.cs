@@ -36,11 +36,11 @@ namespace Bloggie.web.Controllers
             var identityResult = await CreateUserAsync(userViewModel);
             if (identityResult.Succeeded)
             {
-                TempData["success"] = "User created successfully.";
+                TempData["success"] = BlogsResource.UserCreate;
                 return RedirectToAction("List");
             }
 
-            TempData["error"] = "Failed to create user.";
+            TempData["error"] = BlogsResource.FailedCreateUser;
             return View();
         }
 
@@ -50,18 +50,18 @@ namespace Bloggie.web.Controllers
             var user = await userManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
-                TempData["error"] = "User not found.";
+                TempData["error"] = BlogsResource.NotFound;
                 return RedirectToAction("List");
             }
 
             var identityResult = await userManager.DeleteAsync(user);
             if (identityResult.Succeeded)
             {
-                TempData["success"] = "User deleted successfully.";
+                TempData["success"] = BlogsResource.Delete;
                 return RedirectToAction("List");
             }
 
-            TempData["error"] = "Failed to delete user.";
+            TempData["error"] = BlogsResource.FaildDelete;
             return RedirectToAction("List");
         }
 

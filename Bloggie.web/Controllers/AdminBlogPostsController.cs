@@ -33,6 +33,7 @@ namespace Bloggie.web.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> Add(AddBlogPostRequest addBlogPostRequest)
         {
@@ -41,7 +42,7 @@ namespace Bloggie.web.Controllers
                 var blogPost = MapToDomain(addBlogPostRequest);
                 blogPost.Tags = await GetSelectedTagsAsync(addBlogPostRequest.SelectedTags);
                 await _blogPostRepository.AddAsync(blogPost);
-                TempData["success"] = "Blog post created successfully.";
+                TempData["success"] = BlogsResource.Added;
                 return RedirectToAction("Add");
             });
         }
@@ -93,7 +94,7 @@ namespace Bloggie.web.Controllers
             };
             return View(model);
         }
-
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Edit(EditBlogPostRequest editBlogPost)
@@ -103,7 +104,7 @@ namespace Bloggie.web.Controllers
                 var originalBlogPost = await _blogPostRepository.GetByIdAsync(editBlogPost.Id);
                 if (originalBlogPost == null)
                 {
-                    TempData["error"] = "Blog post not found.";
+                    TempData["error"] = BlogsResource.NotFound;
                     return NotFound();
                 }
 
@@ -117,12 +118,12 @@ namespace Bloggie.web.Controllers
                 if (updatedBlog != null)
                 {
                     await LogEditAsync(editBlogPost.Id, editDescription, updatedBlog);
-                    TempData["success"] = "Blog post updated successfully.";
+                    TempData["success"] = BlogsResource.Update;
                     return RedirectToAction("List");
                 }
                 else
                 {
-                    TempData["error"] = "An error occurred while updating the blog post.";
+                    TempData["error"] = BlogsResource.error;
                     return RedirectToAction("Edit", new { id = editBlogPost.Id });
                 }
             });
@@ -135,11 +136,11 @@ namespace Bloggie.web.Controllers
             var deletedPost = await _blogPostRepository.DeleteAsync(editBlogPost.Id);
             if (deletedPost != null)
             {
-                TempData["success"] = "Blog post deleted successfully.";
+                TempData["success"] = BlogsResource.Delete;
                 return RedirectToAction("List");
             }
 
-            TempData["error"] = "Failed to delete blog post.";
+            TempData["error"] = BlogsResource.FaildDelete;
             return RedirectToAction("Edit", new { id = editBlogPost.Id });
         }
 

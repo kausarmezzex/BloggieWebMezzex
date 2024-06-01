@@ -1,6 +1,7 @@
 ﻿using Bloggie.web.Models.Domain;
 using Bloggie.web.Models.ViewModel;
 using Bloggie.web.Repositories;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Bloggie.web.Controllers
 {
-    public class AdminTagsController : Controller
+    public class AdminTagsController : BaseController
     {
         private readonly ITagRepository _tagRepository;
 
@@ -17,11 +18,12 @@ namespace Bloggie.web.Controllers
             _tagRepository = tagRepository;
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Add() => View();
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
         [HttpPost]
         [ActionName("Add")]
         public async Task<IActionResult> AddAsync(AddTagRequest addTag)
@@ -39,11 +41,11 @@ namespace Bloggie.web.Controllers
             };
 
             await _tagRepository.AddAsync(tag);
-            TempData["success"] = "Tag added successfully.";
+            TempData["success"] = BlogsResource.Added;
             return RedirectToAction("List");
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpGet]
         [ActionName("List")]
         public async Task<IActionResult> ListAsync(
@@ -72,7 +74,7 @@ namespace Bloggie.web.Controllers
             return View(tags);
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> EditAsync(Guid id)
         {
@@ -91,7 +93,8 @@ namespace Bloggie.web.Controllers
             return View(editTagRequest);
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> EditAsync(EditTagRequest editTagRequest)
         {
@@ -100,7 +103,7 @@ namespace Bloggie.web.Controllers
             var existingTag = await _tagRepository.GetAsync(editTagRequest.Id);
             if (existingTag == null)
             {
-                TempData["error"] = "Tag not found.";
+                TempData["error"] =BlogsResource.tagNotFound;
                 return RedirectToAction("Edit", new { id = editTagRequest.Id });
             }
 
@@ -109,22 +112,22 @@ namespace Bloggie.web.Controllers
             existingTag.ImageUrl = editTagRequest.ImageUrl;
             await _tagRepository.UpdateAsync(existingTag);
 
-            TempData["success"] = "Tag updated successfully.";
+            TempData["success"] = BlogsResource.Update;
             return RedirectToAction("List");
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             var deletedTag = await _tagRepository.DeleteAsync(id);
             if (deletedTag == null)
             {
-                TempData["error"] = "Failed to delete tag.";
+                TempData["error"] = BlogsResource.FaildDelete;
                 return RedirectToAction("Edit", new { id = id });
             }
 
-            TempData["success"] = "Tag deleted successfully.";
+            TempData["success"] = BlogsResource.Delete;
             return RedirectToAction("List");
         }
 

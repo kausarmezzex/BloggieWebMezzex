@@ -17,6 +17,7 @@
         </div>
         <div class="card-body">
             <form asp-action="Add" method="post">
+                @Html.AntiForgeryToken()
                 <div class="form-group mb-3">
                     <label asp-for="Name" class="control-label col-form-label">Tag Name:</label>
                     <input asp-for="Name" class="form-control" />
